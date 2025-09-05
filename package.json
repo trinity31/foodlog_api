@@ -1,0 +1,16 @@
+{
+  "name": "foodlog-api",
+  "version": "1.0.0",
+  "description": "Food analysis API for FoodLog AI app",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "vercel": "^32.5.0"
+  }
+}

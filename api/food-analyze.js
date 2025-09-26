@@ -49,7 +49,15 @@ module.exports = async (req, res) => {
       "description": "Brief description of the food",
       "servingSize": number (1 serving = 1.0),
       "ingredients": ["ingredient1", "ingredient2"],
-      "nutritions": ["비타민C", "단백질", "탄수화물"]
+      "nutritions": ["비타민C", "단백질", "탄수화물"],
+      "analysis": {
+        "healthScore": number (0-100),
+        "analysis": "Brief health analysis considering user profile"
+      },
+      "recommendations": {
+        "healthImprovements": "Specific improvement suggestions",
+        "alternativeOptions": "Healthier alternative food suggestions"
+      }
     }
 
     IMPORTANT: For "nutritions" field, provide ONLY specific nutrient names (like vitamins, minerals) as an array of strings. Do NOT include sentences or descriptions. Examples: ["비타민C", "칼슘", "철분", "식이섬유"] or ["Vitamin C", "Calcium", "Iron", "Fiber"].
@@ -98,7 +106,15 @@ module.exports = async (req, res) => {
         description: data.description || '',
         servingSize: parseFloat(data.servingSize) || 1.0,
         ingredients: Array.isArray(data.ingredients) ? data.ingredients : [],
-        nutritions: Array.isArray(data.nutritions) ? data.nutritions : []
+        nutritions: Array.isArray(data.nutritions) ? data.nutritions : [],
+        analysis: data.analysis ? {
+          healthScore: parseInt(data.analysis.healthScore) || 50,
+          analysis: data.analysis.analysis || ''
+        } : undefined,
+        recommendations: data.recommendations ? {
+          healthImprovements: data.recommendations.healthImprovements || '',
+          alternativeOptions: data.recommendations.alternativeOptions || ''
+        } : undefined
       };
       
       return res.status(200).json(validatedData);

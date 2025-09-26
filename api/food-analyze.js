@@ -49,9 +49,11 @@ module.exports = async (req, res) => {
       "description": "Brief description of the food",
       "servingSize": number (1 serving = 1.0),
       "ingredients": ["ingredient1", "ingredient2"],
-      "nutritions": ["key nutrition fact 1", "key nutrition fact 2"]
+      "nutritions": ["비타민C", "단백질", "탄수화물"]
     }
-    
+
+    IMPORTANT: For "nutritions" field, provide ONLY specific nutrient names (like vitamins, minerals) as an array of strings. Do NOT include sentences or descriptions. Examples: ["비타민C", "칼슘", "철분", "식이섬유"] or ["Vitamin C", "Calcium", "Iron", "Fiber"].
+
     Provide realistic estimates based on typical portions and recipes.`;
 
     let result;

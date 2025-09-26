@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     }
 
     // Gemini Pro Vision 모델 사용
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
     // 프롬프트 생성
     let prompt = `You are a professional nutritionist. Analyze this food and provide nutritional information.

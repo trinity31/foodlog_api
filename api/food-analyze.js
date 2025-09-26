@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
       "nutritions": ["비타민C", "단백질", "탄수화물"],
       "analysis": {
         "healthScore": number (0-100),
-        "analysis": "Brief health analysis considering user profile"
+        "analysis": "Brief health analysis of this food only (focus on food characteristics, not daily goals comparison)"
       },
       "recommendations": {
         "healthImprovements": "Specific improvement suggestions",
@@ -60,7 +60,9 @@ module.exports = async (req, res) => {
       }
     }
 
-    IMPORTANT: For "nutritions" field, provide ONLY specific nutrient names (like vitamins, minerals) as an array of strings. Do NOT include sentences or descriptions. Examples: ["비타민C", "칼슘", "철분", "식이섬유"] or ["Vitamin C", "Calcium", "Iron", "Fiber"].
+    IMPORTANT:
+    - For "nutritions" field, provide ONLY specific nutrient names (like vitamins, minerals) as an array of strings. Do NOT include sentences or descriptions. Examples: ["비타민C", "칼슘", "철분", "식이섬유"] or ["Vitamin C", "Calcium", "Iron", "Fiber"].
+    - For "analysis" field, analyze ONLY the food characteristics itself. Do NOT compare with daily nutritional goals or mention "daily target" or "일일 목표". Focus on the food's nutritional quality, ingredients, and health benefits/concerns.
 
     Provide realistic estimates based on typical portions and recipes.`;
 

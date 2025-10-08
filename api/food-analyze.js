@@ -24,19 +24,84 @@ module.exports = async (req, res) => {
     // Gemini Pro Vision 모델 사용
     const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
+    // 사용자 프로필 기반 가이드 생성 함수
+    const generateUserProfileGuide = (userProfile, isKorean) => {
+      if (!userProfile) return '';
+
+      const guides = [];
+
+      // 영양 목표 기반 가이드
+      if (userProfile.dailyCalorieGoal) {
+        guides.push(isKorean
+          ? `사용자의 일일 목표 칼로리는 ${userProfile.dailyCalorieGoal}kcal입니다.`
+          : `User's daily calorie goal is ${userProfile.dailyCalorieGoal}kcal.`
+        );
+      }
+
+      if (userProfile.dailyCarbGoal || userProfile.dailyProteinGoal || userProfile.dailyFatGoal) {
+        guides.push(isKorean
+          ? `사용자의 일일 영양소 목표: 탄수화물 ${userProfile.dailyCarbGoal}g, 단백질 ${userProfile.dailyProteinGoal}g, 지방 ${userProfile.dailyFatGoal}g`
+          : `User's daily nutrition goals: Carbs ${userProfile.dailyCarbGoal}g, Protein ${userProfile.dailyProteinGoal}g, Fat ${userProfile.dailyFatGoal}g`
+        );
+      }
+
+      // 건강 관심사 번역 맵
+      const healthInterestTranslations = {
+        'weightLoss': { korean: '체중 감량', english: 'Weight Loss' },
+        'muscleGain': { korean: '근육 증가', english: 'Muscle Gain' },
+        'sugarControl': { korean: '혈당 관리', english: 'Blood Sugar Control' },
+        'slowAging': { korean: '저속노화', english: 'Anti-Aging' },
+        'heartHealth': { korean: '심장 건강', english: 'Heart Health' },
+        'immunity': { korean: '면역력 강화', english: 'Immunity Boost' },
+        'sleep': { korean: '수면 개선', english: 'Sleep Improvement' },
+        'stress': { korean: '스트레스 관리', english: 'Stress Management' },
+        'eyeHealth': { korean: '눈 건강', english: 'Eye Health' },
+        'other': { korean: '기타', english: 'Other' }
+      };
+
+      // 건강 관심사 기반 가이드
+      if (userProfile.healthInterests && userProfile.healthInterests.length > 0) {
+        const translatedInterests = userProfile.healthInterests.map(interest => {
+          const translation = healthInterestTranslations[interest];
+          return isKorean ? (translation?.korean || interest) : (translation?.english || interest);
+        });
+
+        guides.push(isKorean
+          ? `사용자의 건강 관심사: ${translatedInterests.join(', ')}`
+          : `User's health interests: ${translatedInterests.join(', ')}`
+        );
+      }
+
+      // 식이 제한 기반 가이드
+      if (userProfile.dietaryRestrictions && userProfile.dietaryRestrictions.length > 0) {
+        guides.push(isKorean
+          ? `사용자의 식이 제한: ${userProfile.dietaryRestrictions.join(', ')}`
+          : `User's dietary restrictions: ${userProfile.dietaryRestrictions.join(', ')}`
+        );
+      }
+
+      if (guides.length > 0) {
+        const guideTitle = isKorean ? '사용자 맞춤 분석 가이드' : 'User-specific Analysis Guide';
+        const analysisNote = isKorean
+          ? '위 정보를 고려하여 분석 및 추천을 진행해주세요.'
+          : 'Please proceed with analysis and recommendations considering the above information.';
+
+        return `${guideTitle}:\n${guides.join('\n')}\n${analysisNote}`;
+      }
+
+      return '';
+    };
+
+    const isKorean = language === 'ko';
+    const userGuide = generateUserProfileGuide(userProfile, isKorean);
+
     // 프롬프트 생성
     let prompt = `You are a professional nutritionist. Analyze this food and provide nutritional information.
     ${description ? `Food description: ${description}` : ''}
-    
-    ${userProfile ? `User Profile:
-    - Age: ${userProfile.age}
-    - Gender: ${userProfile.gender}
-    - Daily Calorie Goal: ${userProfile.dailyCalorieGoal}
-    - Daily Carb Goal: ${userProfile.dailyCarbGoal}g
-    - Daily Protein Goal: ${userProfile.dailyProteinGoal}g
-    - Daily Fat Goal: ${userProfile.dailyFatGoal}g` : ''}
-    
-    Please provide a response in ${language === 'ko' ? 'Korean' : 'English'} with the following JSON format:
+
+    ${userGuide}
+
+    Please provide a response in ${isKorean ? 'Korean' : 'English'} with the following JSON format:
     {
       "foodName": "Name of the food",
       "calories": number (kcal),
